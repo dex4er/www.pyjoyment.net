@@ -2,9 +2,12 @@
 
 import Pyjo.Server.Daemon
 import Pyjo.URL
-from Pyjo.Util import b
+
+from Pyjo.Loader import embedded_file
+from Pyjo.Util import b, u
 
 import os
+import sys
 
 OPENSHIFT_REPO_DIR = os.environ['OPENSHIFT_REPO_DIR']
 os.chdir(OPENSHIFT_REPO_DIR)
@@ -18,7 +21,8 @@ daemon = Pyjo.Server.Daemon.new(listen=[listen])
 daemon.unsubscribe('request')
 
 
-DATA = r'''
+DATA = u(r'''
+@@ index.html.tpl
 <!DOCTYPE html>
 <html>
 <head>
@@ -32,10 +36,11 @@ DATA = r'''
 <p>{method} request for {path}</p>
 <p>See <a href="http://pyjoyment.readthedocs.org/">http://pyjoyment.readthedocs.org/</a>
 and <a href="https://github.com/dex4er/Pyjoyment">https://github.com/dex4er/Pyjoyment</a></p>
+<p>See <a href="https://github.com/dex4er/www.pyjoyment.net/blob/master/app.py">app.py</a> source file.</p>
 </body>
 
 </html>
-'''
+''')
 
 
 @daemon.on
@@ -44,10 +49,13 @@ def request(daemon, tx):
     method = tx.req.method
     path = tx.req.url.path
 
+    # Template
+    template = embedded_file(sys.modules[__name__], 'index.html.tpl')
+
     # Response
     tx.res.code = 200
     tx.res.headers.content_type = 'text/html; charset=utf-8'
-    tx.res.body = b(DATA.format(method=method, path=path))
+    tx.res.body = b(template.format(method=method, path=path))
 
     # Resume transaction
     tx.resume()
