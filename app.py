@@ -46,7 +46,7 @@ def request(daemon, tx):
 
     # Response
     tx.res.code = 200
-    tx.res.headers.content_type = 'text/html'
+    tx.res.headers.content_type = 'text/html; charset=utf-8'
     tx.res.body = b(DATA.format(method=method, path=path))
 
     # Resume transaction
