@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import Pyjo.Server.Daemon
 import Pyjo.URL
 from Pyjo.Util import b
@@ -16,6 +18,26 @@ daemon = Pyjo.Server.Daemon.new(listen=[listen])
 daemon.unsubscribe('request')
 
 
+DATA = r'''
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Pyjoyment</title>
+</head>
+
+<body>
+<h1>♥ Pyjoyment ♥</h1>
+<h2>This page is served by Pyjoyment framework.</h2>
+<p>{method} request for {path}</p>
+<p>See <a href="http://pyjoyment.readthedocs.org/">http://pyjoyment.readthedocs.org/</a>
+and <a href="https://github.com/dex4er/Pyjoyment">https://github.com/dex4er/Pyjoyment</a></p>
+</body>
+
+</html>
+'''
+
+
 @daemon.on
 def request(daemon, tx):
     # Request
@@ -24,8 +46,8 @@ def request(daemon, tx):
 
     # Response
     tx.res.code = 200
-    tx.res.headers.content_type = 'text/plain'
-    tx.res.body = b("{0} request for {1}\n".format(method, path))
+    tx.res.headers.content_type = 'text/html'
+    tx.res.body = b(DATA.format(method=method, path=path))
 
     # Resume transaction
     tx.resume()
