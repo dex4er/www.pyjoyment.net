@@ -17,6 +17,8 @@ os.chdir(OPENSHIFT_REPO_DIR)
 OPENSHIFT_PYTHON_IP = os.environ['OPENSHIFT_PYTHON_IP']
 OPENSHIFT_PYTHON_PORT = os.environ['OPENSHIFT_PYTHON_PORT']
 
+VERSION = pkg_resources.get_distribution('Pyjoyment').version
+
 listen = str(Pyjo.URL.new(scheme='http', host=OPENSHIFT_PYTHON_IP, port=OPENSHIFT_PYTHON_PORT))
 
 daemon = Pyjo.Server.Daemon.new(listen=[listen])
@@ -47,8 +49,7 @@ and <a href="https://github.com/dex4er/Pyjoyment">https://github.com/dex4er/Pyjo
 
 @daemon.on
 def request(daemon, tx):
-    # Framework
-    version = pkg_resources.get_distribution('Pyjoyment').version
+    version = VERSION
 
     # Request
     method = tx.req.method
