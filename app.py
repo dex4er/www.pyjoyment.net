@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # -*- coding: utf-8 -*-
 
 import Pyjo.Server.Daemon
@@ -7,6 +9,7 @@ from Pyjo.Loader import embedded_file
 from Pyjo.Util import b, u
 
 import os
+import pkg_resources
 import sys
 
 OPENSHIFT_REPO_DIR = os.environ['OPENSHIFT_REPO_DIR']
@@ -32,7 +35,7 @@ DATA = u(r'''
 
 <body>
 <h1>♥ Pyjoyment ♥</h1>
-<h2>This page is served by Pyjoyment framework.</h2>
+<h2>This page is served by Pyjoyment {version} framework.</h2>
 <p>{method} request for {path}</p>
 <p>See <a href="http://pyjoyment.readthedocs.org/">http://pyjoyment.readthedocs.org/</a>
 and <a href="https://github.com/dex4er/Pyjoyment">https://github.com/dex4er/Pyjoyment</a></p>
@@ -45,6 +48,9 @@ and <a href="https://github.com/dex4er/Pyjoyment">https://github.com/dex4er/Pyjo
 
 @daemon.on
 def request(daemon, tx):
+    # Framework
+    version = pkg_resources.get_distribution('Pyjoyment').version
+
     # Request
     method = tx.req.method
     path = tx.req.url.path
@@ -55,7 +61,7 @@ def request(daemon, tx):
     # Response
     tx.res.code = 200
     tx.res.headers.content_type = 'text/html; charset=utf-8'
-    tx.res.body = b(template.format(method=method, path=path))
+    tx.res.body = b(template.format(**locals()))
 
     # Resume transaction
     tx.resume()
